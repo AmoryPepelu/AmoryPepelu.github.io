@@ -39,4 +39,4 @@ Disallow: /
 User-agent: *
 Disallow: /
 Disallow: /
-Sitemap: https://spikepepelu.github.io
+Sitemap: https://amorypepelu.github.io
