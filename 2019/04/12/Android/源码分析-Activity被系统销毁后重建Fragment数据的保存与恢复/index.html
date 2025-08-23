@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amorypepelu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"hide","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500}},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":100,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="分析Activity被系统销毁后，Fragment的重建与数据的保存和恢复逻辑。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="源码分析:Activity被系统销毁后Fragment中保存的数据在哪里？">
+<meta property="og:url" content="https://amorypepelu.github.io/2019/04/12/Android/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-Activity%E8%A2%AB%E7%B3%BB%E7%BB%9F%E9%94%80%E6%AF%81%E5%90%8E%E9%87%8D%E5%BB%BAFragment%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BF%9D%E5%AD%98%E4%B8%8E%E6%81%A2%E5%A4%8D/index.html">
+<meta property="og:site_name" content="BlackNeko">
+<meta property="og:description" content="分析Activity被系统销毁后，Fragment的重建与数据的保存和恢复逻辑。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-04-12T01:54:20.000Z">
+<meta property="article:modified_time" content="2025-08-23T04:55:54.000Z">
+<meta property="article:author" content="BlackNeko">
+<meta property="article:tag" content="源码分析">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amorypepelu.github.io/2019/04/12/Android/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-Activity%E8%A2%AB%E7%B3%BB%E7%BB%9F%E9%94%80%E6%AF%81%E5%90%8E%E9%87%8D%E5%BB%BAFragment%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BF%9D%E5%AD%98%E4%B8%8E%E6%81%A2%E5%A4%8D/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amorypepelu.github.io/2019/04/12/Android/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-Activity%E8%A2%AB%E7%B3%BB%E7%BB%9F%E9%94%80%E6%AF%81%E5%90%8E%E9%87%8D%E5%BB%BAFragment%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BF%9D%E5%AD%98%E4%B8%8E%E6%81%A2%E5%A4%8D/","path":"2019/04/12/Android/源码分析-Activity被系统销毁后重建Fragment数据的保存与恢复/","title":"源码分析:Activity被系统销毁后Fragment中保存的数据在哪里？"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>源码分析:Activity被系统销毁后Fragment中保存的数据在哪里？ | BlackNeko</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">BlackNeko</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-text">遇到的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E5%A4%8D%E9%97%AE%E9%A2%98"><span class="nav-text">修复问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E5%9B%A0%E5%88%86%E6%9E%90"><span class="nav-text">原因分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0"><span class="nav-text">添加</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%94%80%E6%AF%81%E9%87%8D%E5%BB%BA"><span class="nav-text">销毁重建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-text">加入数据</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="BlackNeko"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">BlackNeko</p>
+  <div class="site-description" itemprop="description">我的征途是星辰大海</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AmoryPepelu/AmoryPepelu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AmoryPepelu&#x2F;AmoryPepelu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amorypepelu.github.io/2019/04/12/Android/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90-Activity%E8%A2%AB%E7%B3%BB%E7%BB%9F%E9%94%80%E6%AF%81%E5%90%8E%E9%87%8D%E5%BB%BAFragment%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BF%9D%E5%AD%98%E4%B8%8E%E6%81%A2%E5%A4%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="BlackNeko">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BlackNeko">
+      <meta itemprop="description" content="我的征途是星辰大海">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="源码分析:Activity被系统销毁后Fragment中保存的数据在哪里？ | BlackNeko">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          源码分析:Activity被系统销毁后Fragment中保存的数据在哪里？
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-04-12 09:54:20" itemprop="dateCreated datePublished" datetime="2019-04-12T09:54:20+08:00">2019-04-12</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2025-08-23 12:55:54" itemprop="dateModified" datetime="2025-08-23T12:55:54+08:00">2025-08-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>分析Activity被系统销毁后，Fragment的重建与数据的保存和恢复逻辑。</p>
+<span id="more"></span>
+
+<h2 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h2><p>bugly上有个crash，是使用kotlin的 <code>lateinit var</code> 的属性没有被初始化造成的，相关代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">CpWxNumSucDialog</span> : <span class="type">BaseDialogFragment</span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> wxNum: String</span><br><span class="line"></span><br><span class="line">     <span class="keyword">public</span> View onCreateView(LayoutInflater inflater, <span class="meta">@Nullable</span> ViewGroup container,</span><br><span class="line">                             <span class="meta">@Nullable</span> Bundle savedInstanceState) &#123;</span><br><span class="line">        <span class="keyword">val</span> binding = safeBind&lt;LayoutCpWxSucBinding&gt;(rootView!!)!!</span><br><span class="line">        binding.tvWechat.text = wxNum <span class="comment">// !! crash !!</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setData</span><span class="params">(wxNum: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.wxNum = wxNum</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>分析崩溃日志发现Fragment依赖的Activity重新走了 <code>onCreate()</code> 创建流程，推测可能是由于用户按 home 键，在此Activity页面将应用退到后台，长期未唤起导致应用被系统回收，再次进入APP，系统恢复Activity状态导致。</p>
+<h2 id="修复问题"><a href="#修复问题" class="headerlink" title="修复问题"></a>修复问题</h2><p>在 <code>setData()</code> 方法中，不使用直接赋值，而是使用 <code>arguments</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">fun setData(wxNum: String) &#123;</span><br><span class="line">    arguments = Bundle().also &#123;</span><br><span class="line">        it.putString(Wx_Num, wxNum)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>先结合Activity看Fragment销毁重建的生命周期，使用 <code>横竖屏切换</code> 来模拟Activity被系统回收情况</p>
+<h3 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">I: Activity onCreate: </span><br><span class="line">I: Activity onResume: </span><br><span class="line">I: fragment onAttach: </span><br><span class="line">I: fragment onCreate: </span><br><span class="line">I: fragment onCreateView: </span><br><span class="line">I: onCreateView: b1==b2:false</span><br><span class="line">I: fragment onActivityCreated: </span><br><span class="line">I: fragment onViewStateRestored:</span><br></pre></td></tr></table></figure>
+
+<h3 id="销毁重建"><a href="#销毁重建" class="headerlink" title="销毁重建"></a>销毁重建</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">I: fragment onSaveInstanceState:</span><br><span class="line">I: Activity onSaveInstanceState: </span><br><span class="line">I: fragment onDestroyView: </span><br><span class="line">I: fragment onDestroy: </span><br><span class="line">I: fragment onDetach: </span><br><span class="line">I: Activity onDestroy: </span><br><span class="line">I: fragment onAttach: </span><br><span class="line">I: fragment onCreate: </span><br><span class="line">I: Activity onCreate: </span><br><span class="line">I: fragment onCreateView: </span><br><span class="line">I: onCreateView: </span><br><span class="line">I: fragment onActivityCreated: </span><br><span class="line">I: fragment onViewStateRestored:</span><br><span class="line">I: Activity onRestoreInstanceState: </span><br><span class="line">I: Activity onResume: </span><br></pre></td></tr></table></figure>
+
+<p><code>onSaveInstanceState</code> 和 <code>onRestoreInstanceState</code> 都被调用了。</p>
+<h3 id="加入数据"><a href="#加入数据" class="headerlink" title="加入数据"></a>加入数据</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">FragmentManager</span> <span class="variable">fragmentManager</span> <span class="operator">=</span> getSupportFragmentManager();</span><br><span class="line"><span class="type">VDFragment</span> <span class="variable">fragment</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">VDFragment</span>();</span><br><span class="line"><span class="type">Bundle</span> <span class="variable">bundle</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Bundle</span>();</span><br><span class="line">bundle.putString(<span class="string">&quot;data&quot;</span>, <span class="string">&quot;batman&quot;</span>);</span><br><span class="line">fragment.setArguments(bundle);</span><br><span class="line">fragmentManager.beginTransaction()</span><br><span class="line">        .replace(R.id.fl_container, fragment)</span><br><span class="line">        .commit();</span><br></pre></td></tr></table></figure>
+
+<p>在Fragment <code>onCreateView()</code> 中取数据，并且观察Activity、supportFragmentManager、Fragment、arguments 几个对象的情况</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//activity</span></span><br><span class="line">Log.i(TAG, <span class="string">&quot;Activity onCreate: getSupportFragmentManager hashcode=&quot;</span> + getSupportFragmentManager().hashCode()</span><br><span class="line">+ <span class="string">&quot;,activity hashcode=&quot;</span> + hashCode());</span><br><span class="line"></span><br><span class="line"><span class="comment">//fragment</span></span><br><span class="line"><span class="keyword">static</span> Bundle b1;</span><br><span class="line"><span class="keyword">static</span> Bundle b2;</span><br><span class="line"></span><br><span class="line"><span class="type">Bundle</span> <span class="variable">bundle</span> <span class="operator">=</span> getArguments();</span><br><span class="line"><span class="keyword">if</span> (b1 == <span class="literal">null</span>) &#123;</span><br><span class="line">    b1 = bundle;</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    b2 = bundle;</span><br><span class="line">    Log.i(TAG, <span class="string">&quot;onCreateView: b1==b2:&quot;</span> + (b1 == b2));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (bundle != <span class="literal">null</span>) &#123;</span><br><span class="line">    Log.i(<span class="string">&quot;fragment_ts&quot;</span>, bundle.getString(<span class="string">&quot;data&quot;</span>)</span><br><span class="line">            + <span class="string">&quot;,fragment hashcode=&quot;</span> + hashCode()</span><br><span class="line">            + <span class="string">&quot;,bundle hashcode=&quot;</span> + bundle.hashCode()</span><br><span class="line">            + <span class="string">&quot;,activity hashcode=&quot;</span> + getContext().hashCode());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>日志:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">I: Activity onCreate: getSupportFragmentManager hashcode=42730560,activity hashcode=25396074</span><br><span class="line">I: fragment onCreateView: </span><br><span class="line">I: onCreateView: b1==b2:true</span><br><span class="line">I: batman,fragment hashcode=141131641,bundle hashcode=161033219,activity hashcode=25396074</span><br><span class="line"></span><br><span class="line">I: Activity onCreate: getSupportFragmentManager hashcode=168308313,activity hashcode=34224187</span><br><span class="line">I: fragment onCreateView: </span><br><span class="line">I: onCreateView: b1==b2:true</span><br><span class="line">I: batman,fragment hashcode=91294238,bundle hashcode=161033219,activity hashcode=34224187</span><br><span class="line"></span><br><span class="line">I: Activity onCreate: getSupportFragmentManager hashcode=38793086,activity hashcode=55190968</span><br><span class="line">I: fragment onCreateView: </span><br><span class="line">I: onCreateView: b1==b2:true</span><br><span class="line">I: batman,fragment hashcode=7703775,bundle hashcode=161033219,activity hashcode=55190968</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>argument</code> 内存地址和 hashcode 都是相同的，是同一个对象，但是 FragmentManager 、 Activity 、 Fragment 的 hashcode 都不相同，是新对象。</p>
+<p>所以数据应该保存在 argument 里面而不是作为属性保存在Fragment里面，不然就需要在 <code>onSaveInstanceState</code> 和 <code>onRestoreInstanceState</code> 中做处理。</p>
+<p>问题是： <code>argument</code> 对应的 <code>Bundle</code> 是如何保存的呢？</p>
+<p>分析思路：</p>
+<ol>
+<li>在Fragment的 <code>onSaveInstanceState</code> 和 <code>onRestoreInstanceState</code> 中 查看关于 mArguments 的内容，并没有有用的发现，线索断裂</li>
+<li>既然bundle是赋值给mArguments的，查看有什么地方处理了mArguments，发现内部类 <code>FragmentState</code>，从类名就可以察觉这个东西很有嫌疑(这是 support-26 版本的源码，这个版本里面， FragmentState 是 Fragment 的非静态内部类，会持有Fragment的引用造成内存泄露，后面的版本把 FragmentState 拎出去了)</li>
+<li>如图不是低版本 support library，只能追溯Fragment宿主Activity的 <code>onSaveInstanceState()</code> 了，可以在父类 FragmentActivity 中发现以下代码</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onSaveInstanceState</span><span class="params">(Bundle outState)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.onSaveInstanceState(outState);</span><br><span class="line">    markFragmentsCreated();</span><br><span class="line">    <span class="type">Parcelable</span> <span class="variable">p</span> <span class="operator">=</span> mFragments.saveAllState();</span><br><span class="line">    <span class="keyword">if</span> (p != <span class="literal">null</span>) &#123;</span><br><span class="line">        outState.putParcelable(FRAGMENTS_TAG, p);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>mFragments :</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">FragmentController</span> <span class="variable">mFragments</span> <span class="operator">=</span> FragmentController.createController(<span class="keyword">new</span> <span class="title class_">HostCallbacks</span>());</span><br><span class="line"></span><br><span class="line"><span class="comment">//FragmentController</span></span><br><span class="line"><span class="keyword">public</span> Parcelable <span class="title function_">saveAllState</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> mHost.mFragmentManager.saveAllState();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后调用到 <code>FragmentManager#saveAllState()</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//省略部分代码</span></span><br><span class="line">Parcelable <span class="title function_">saveAllState</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// First collect all active fragments.</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">N</span> <span class="operator">=</span> mActive.size();</span><br><span class="line">    FragmentState[] active = <span class="keyword">new</span> <span class="title class_">FragmentState</span>[N];</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">haveFragments</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;N; i++) &#123;</span><br><span class="line">        <span class="type">Fragment</span> <span class="variable">f</span> <span class="operator">=</span> mActive.valueAt(i);</span><br><span class="line">        <span class="type">FragmentState</span> <span class="variable">fs</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FragmentState</span>(f);</span><br><span class="line">        active[i] = fs;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">FragmentManagerState</span> <span class="variable">fms</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FragmentManagerState</span>();</span><br><span class="line">    fms.mActive = active;</span><br><span class="line">    fms.mAdded = added;</span><br><span class="line">    fms.mBackStack = backStack;</span><br><span class="line">    <span class="keyword">if</span> (mPrimaryNav != <span class="literal">null</span>) &#123;</span><br><span class="line">        fms.mPrimaryNavActiveIndex = mPrimaryNav.mIndex;</span><br><span class="line">    &#125;</span><br><span class="line">    fms.mNextFragmentIndex = mNextFragmentIndex;</span><br><span class="line">    saveNonConfig();</span><br><span class="line">    <span class="keyword">return</span> fms;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以 FragmentActivity 中用 FRAGMENTS_TAG 保存的实际上是 FragmentManagerState 对象，简称fms。fms 中 active 数组保存 FragmentState 对象，FragmentState 中保存 Fragment状态。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//FragmentState</span></span><br><span class="line">FragmentState(Fragment frag) &#123;</span><br><span class="line">    mClassName = frag.getClass().getName();</span><br><span class="line">    mIndex = frag.mIndex;</span><br><span class="line">    mFromLayout = frag.mFromLayout;</span><br><span class="line">    mFragmentId = frag.mFragmentId;</span><br><span class="line">    mContainerId = frag.mContainerId;</span><br><span class="line">    mTag = frag.mTag;</span><br><span class="line">    mRetainInstance = frag.mRetainInstance;</span><br><span class="line">    mDetached = frag.mDetached;</span><br><span class="line">    mArguments = frag.mArguments;</span><br><span class="line">    mHidden = frag.mHidden;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>数据恢复</p>
+<p>从 <code>onRestoreInstanceState()</code> 开始，可以直接从 FragmentActivity 开始看了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onRestoreInstanceState</span><span class="params">(Bundle savedInstanceState,</span></span><br><span class="line"><span class="params">            PersistableBundle persistentState)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (savedInstanceState != <span class="literal">null</span>) &#123;</span><br><span class="line">        onRestoreInstanceState(savedInstanceState);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>嗯，没有。看看父类呢</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onRestoreInstanceState</span><span class="params">(Bundle savedInstanceState)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (mWindow != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="type">Bundle</span> <span class="variable">windowState</span> <span class="operator">=</span> savedInstanceState.getBundle(WINDOW_HIERARCHY_TAG);</span><br><span class="line">        <span class="keyword">if</span> (windowState != <span class="literal">null</span>) &#123;</span><br><span class="line">            mWindow.restoreHierarchyState(windowState);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>还是没有。 great !</p>
+<p>既然 FragmentActivity 中是通过 <code>mFragments</code> 间接操作 FragmentManager 的，那直接找 <code>mFragments</code> 的所有调用位置，或者搜 <code>mFragments.restore</code> 好了。</p>
+<p>在 <code>onCreate()</code> 找到了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onCreate</span><span class="params">(<span class="meta">@Nullable</span> Bundle savedInstanceState)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>.mFragments.attachHost((Fragment)<span class="literal">null</span>);</span><br><span class="line">    <span class="built_in">super</span>.onCreate(savedInstanceState);</span><br><span class="line"></span><br><span class="line">    <span class="type">NonConfigurationInstances</span> <span class="variable">nc</span> <span class="operator">=</span></span><br><span class="line">            (NonConfigurationInstances) getLastNonConfigurationInstance();</span><br><span class="line">    <span class="keyword">if</span> (nc != <span class="literal">null</span>) &#123;</span><br><span class="line">        mViewModelStore = nc.viewModelStore;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (savedInstanceState != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="type">Parcelable</span> <span class="variable">p</span> <span class="operator">=</span> savedInstanceState.getParcelable(<span class="string">&quot;android:support:fragments&quot;</span>);</span><br><span class="line">        <span class="built_in">this</span>.mFragments.restoreAllState(p, nc != <span class="literal">null</span> ? nc.fragments : <span class="literal">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//重走Fragment create 生命周期</span></span><br><span class="line">    <span class="built_in">this</span>.mFragments.dispatchCreate();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看 FragmentManager</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> <span class="title function_">restoreAllState</span><span class="params">(Parcelable state, FragmentManagerNonConfig nonConfig)</span> &#123;</span><br><span class="line">    <span class="comment">// If there is no saved state at all, then there can not be</span></span><br><span class="line">    <span class="comment">// any nonConfig fragments either, so that is that.</span></span><br><span class="line">    <span class="keyword">if</span> (state == <span class="literal">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="type">FragmentManagerState</span> <span class="variable">fms</span> <span class="operator">=</span> (FragmentManagerState)state;</span><br><span class="line">    <span class="keyword">if</span> (fms.mActive == <span class="literal">null</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Build the full list of active fragments, instantiating them from</span></span><br><span class="line">    <span class="comment">// their saved state.</span></span><br><span class="line">    mActive = <span class="keyword">new</span> <span class="title class_">SparseArray</span>&lt;&gt;(fms.mActive.length);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;fms.mActive.length; i++) &#123;</span><br><span class="line">        <span class="type">FragmentState</span> <span class="variable">fs</span> <span class="operator">=</span> fms.mActive[i];</span><br><span class="line">        <span class="keyword">if</span> (fs != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">FragmentManagerNonConfig</span> <span class="variable">childNonConfig</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">            <span class="keyword">if</span> (childNonConfigs != <span class="literal">null</span> &amp;&amp; i &lt; childNonConfigs.size()) &#123;</span><br><span class="line">                childNonConfig = childNonConfigs.get(i);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//重新创建Fragment对象</span></span><br><span class="line">            <span class="type">Fragment</span> <span class="variable">f</span> <span class="operator">=</span> fs.instantiate(mHost, mContainer, mParent, childNonConfig,</span><br><span class="line">                    viewModelStore);</span><br><span class="line">            </span><br><span class="line">            mActive.put(f.mIndex, f);</span><br><span class="line">            <span class="comment">// Now that the fragment is instantiated (or came from being</span></span><br><span class="line">            <span class="comment">// retained above), clear mInstance in case we end up re-restoring</span></span><br><span class="line">            <span class="comment">// from this FragmentState again.</span></span><br><span class="line">            fs.mInstance = <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里恢复Fragment栈，并把 savedInstanceState 里面保存的 FragmentManagerState 序列化对象重新创建，因为 mActive 数组里面只是保存 FragmentState 对象的堆地址，所以 FragmentState 对象并没有重新创建，所以里面保存的 argument 也没有重新创建。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/AmoryPepelu/Ladybird/blob/master/AndroidHunter/ViewDemo/app/src/main/java/github/amorypepelu/viewdemo/fragment/FragmentActivity.java">源码</a></p>
+<p>the end .</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># 源码分析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/04/01/Android/RecyclerView%E4%BC%98%E5%8C%96-%E7%8B%AC%E7%AB%8BViewType%E4%BC%98%E5%8C%96/" rel="prev" title="RecyclerView优化-独立ViewType优化">
+                  <i class="fa fa-angle-left"></i> RecyclerView优化-独立ViewType优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2025/08/19/Hexo/hexo-next-%E8%BF%87%E6%BB%A4%E6%8C%87%E5%AE%9A%E6%96%87%E7%AB%A0/" rel="next" title="定制hexo-next:过滤指定文章">
+                  定制hexo-next:过滤指定文章 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">BlackNeko</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
