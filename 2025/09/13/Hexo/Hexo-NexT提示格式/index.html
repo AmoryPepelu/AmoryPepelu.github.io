@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.2.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"amorypepelu.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":false,"version":"8.24.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"hide","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":false,"style":null},"fold":{"enable":false,"height":500}},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":100,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="Hexo 的 NexT 主题支持多种提示格式（Note 标签），例如普通、提示、警告、危险等，它们有默认的样式，但你也可以自定义。下面我将为你详细解释其格式和用法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo-NexT提示格式">
+<meta property="og:url" content="https://amorypepelu.github.io/2025/09/13/Hexo/Hexo-NexT%E6%8F%90%E7%A4%BA%E6%A0%BC%E5%BC%8F/index.html">
+<meta property="og:site_name" content="BlackNeko">
+<meta property="og:description" content="Hexo 的 NexT 主题支持多种提示格式（Note 标签），例如普通、提示、警告、危险等，它们有默认的样式，但你也可以自定义。下面我将为你详细解释其格式和用法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-09-12T23:18:36.000Z">
+<meta property="article:modified_time" content="2025-09-13T00:02:14.652Z">
+<meta property="article:author" content="BlackNeko">
+<meta property="article:tag" content="next">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://amorypepelu.github.io/2025/09/13/Hexo/Hexo-NexT%E6%8F%90%E7%A4%BA%E6%A0%BC%E5%BC%8F/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://amorypepelu.github.io/2025/09/13/Hexo/Hexo-NexT%E6%8F%90%E7%A4%BA%E6%A0%BC%E5%BC%8F/","path":"2025/09/13/Hexo/Hexo-NexT提示格式/","title":"Hexo-NexT提示格式"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Hexo-NexT提示格式 | BlackNeko</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">BlackNeko</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%9D-%E6%8F%90%E7%A4%BA%E5%9D%97%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95"><span class="nav-text">📝 提示块的基本语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%8E%A8-%E6%8F%90%E7%A4%BA%E6%A0%B7%E5%BC%8F%E4%B8%8E%E7%B1%BB%E5%88%AB"><span class="nav-text">🎨 提示样式与类别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E2%9A%99%EF%B8%8F-%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%90%E7%A4%BA%E6%A0%B7%E5%BC%8F"><span class="nav-text">⚙️ 自定义提示样式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%92%A1-%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7%E4%B8%8E%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-text">💡 使用技巧与注意事项</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="BlackNeko"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">BlackNeko</p>
+  <div class="site-description" itemprop="description">我的征途是星辰大海</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/AmoryPepelu/AmoryPepelu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;AmoryPepelu&#x2F;AmoryPepelu" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://amorypepelu.github.io/2025/09/13/Hexo/Hexo-NexT%E6%8F%90%E7%A4%BA%E6%A0%BC%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="BlackNeko">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="BlackNeko">
+      <meta itemprop="description" content="我的征途是星辰大海">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Hexo-NexT提示格式 | BlackNeko">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Hexo-NexT提示格式
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2025-09-13 07:18:36 / 修改时间：08:02:14" itemprop="dateCreated datePublished" datetime="2025-09-13T07:18:36+08:00">2025-09-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>Hexo 的 NexT 主题支持多种提示格式（Note 标签），例如普通、提示、警告、危险等，它们有默认的样式，但你也可以自定义。下面我将为你详细解释其格式和用法。</p>
+<span id="more"></span>
+
+<h3 id="📝-提示块的基本语法"><a href="#📝-提示块的基本语法" class="headerlink" title="📝 提示块的基本语法"></a>📝 提示块的基本语法</h3><p>在 Markdown 文件中，你可以使用特定的代码块语法来添加提示框。NexT 主题支持的提示类型主要包括 <code>note</code> , <code>primary</code> , <code>info</code>, <code>success</code> , <code>warning</code> , <code>danger</code> 等。<br>基本格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#123;% note success %&#125;</span><br><span class="line">这是一个成功的提示。</span><br><span class="line">&#123;% endnote %&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="🎨-提示样式与类别"><a href="#🎨-提示样式与类别" class="headerlink" title="🎨 提示样式与类别"></a>🎨 提示样式与类别</h3><p>NexT 主题默认提供了几种提示样式，每种都有其独特的视觉风格，适用于不同的场景。</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>说明</th>
+<th>典型应用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>note</code></td>
+<td>普通说明，默认样式</td>
+<td>一般性注释或补充信息</td>
+</tr>
+<tr>
+<td><code>primary</code></td>
+<td>主要信息，稍加强调</td>
+<td>重要但非关键的点</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>信息提示，蓝色调</td>
+<td>提供额外信息或上下文</td>
+</tr>
+<tr>
+<td><code>success</code></td>
+<td>成功提示，绿色调</td>
+<td>操作成功、完成某项任务、正向反馈</td>
+</tr>
+<tr>
+<td><code>warning</code></td>
+<td>警告提示，橙黄色调</td>
+<td>需要注意的事项、可能存在风险</td>
+</tr>
+<tr>
+<td><code>danger</code></td>
+<td>危险提示，红色调</td>
+<td>严重警告、错误操作、高风险行为</td>
+</tr>
+</tbody></table>
+<div class="note default"><p>default 提示块标签</p>
+</div>
+
+<div class="note primary"><p>primary 提示块标签</p>
+</div>
+
+<div class="note success"><p>success 提示块标签</p>
+</div>
+
+<div class="note info"><p>info 提示块标签</p>
+</div>
+
+<div class="note warning"><p>warning 提示块标签</p>
+</div>
+
+<div class="note danger"><p>danger 提示块标签</p>
+</div>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#123;% note default %&#125;</span><br><span class="line">default 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note primary %&#125;</span><br><span class="line">primary 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note success %&#125;</span><br><span class="line">success 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note info %&#125;</span><br><span class="line">info 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note warning %&#125;</span><br><span class="line">warning 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br><span class="line"></span><br><span class="line">&#123;% note danger %&#125;</span><br><span class="line">danger 提示块标签</span><br><span class="line">&#123;% endnote %&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="⚙️-自定义提示样式"><a href="#⚙️-自定义提示样式" class="headerlink" title="⚙️ 自定义提示样式"></a>⚙️ 自定义提示样式</h3><p>如果默认的提示样式不符合你的喜好，你可以通过自定义 CSS 来修改它们。</p>
+<ol>
+<li><p>创建自定义样式文件：在<code>Hexo</code>博客的<code>source/_data</code>目录下（如果<code>_data</code>目录不存在，请自行创建），新建一个<code>styles.styl</code>文件。</p>
+</li>
+<li><p>编写自定义样式：在  <code>styles.styl</code> 文件中，你可以覆盖 NexT 主题默认的提示框样式。例如，如果你想修改警告框的边框颜色和背景色，可以添加：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">.note.warning &#123;</span><br><span class="line">  border-color: #f0ad4e;</span><br><span class="line">  background-color: #fcf8f2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>你也可以修改代码块的样式，例如颜色和背景：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">code &#123;</span><br><span class="line">    color: #ff7600;</span><br><span class="line">    background: #fbf7f8;</span><br><span class="line">    margin: 2px;</span><br><span class="line">&#125;</span><br><span class="line">.highlight, pre &#123;</span><br><span class="line">    margin: 5px 0;</span><br><span class="line">    padding: 5px;</span><br><span class="line">    border-radius: 3px;</span><br><span class="line">&#125;</span><br><span class="line">.highlight, code, pre &#123;</span><br><span class="line">    border: 1px solid #d6d6d6;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的颜色值（ #ff7600 ,  #fbf  7f8 ,  #d6d  6d6 ）可以替换为你喜欢的任何颜色。</p>
+</li>
+<li><p>启用自定义文件：确保在 NexT 主题的配置文件  _config.yml （或  _config.next.yml ）中，启用了自定义文件功能。找到以下部分并取消注释  style  所在行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">custom_file_path:</span><br><span class="line">  #style: source/_data/styles.styl</span><br></pre></td></tr></table></figure>
+<p>改为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">custom_file_path:</span><br><span class="line">  style: source/_data/styles.styl</span><br></pre></td></tr></table></figure></li>
+<li><p>清理并重新生成：修改保存后，在终端中运行以下命令来清除缓存并重新生成博客文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="💡-使用技巧与注意事项"><a href="#💡-使用技巧与注意事项" class="headerlink" title="💡 使用技巧与注意事项"></a>💡 使用技巧与注意事项</h3><ol>
+<li><p>内容支持 Markdown：提示块内的文字支持 Markdown 语法，你可以使用加粗、斜体、链接、代码片段等。</p>
+</li>
+<li><p>兼容性：请注意，不同版本的 NexT 主题在提示框的语法和默认样式上可能会有细微差别。上述介绍基于较新的 NexT 版本。如果你使用的是较旧的版本（如 v7.x），语法可能略有不同，例如更多使用  &#96;</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/next/" rel="tag"># next</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2025/08/22/Hexo/hexo-next-%E5%B1%8F%E8%94%BD%E2%80%9C%E4%B8%8A%E4%B8%80%E7%AF%87%E2%80%9D%E5%92%8C%E2%80%9C%E4%B8%8B%E4%B8%80%E7%AF%87%E2%80%9D%E5%8A%9F%E8%83%BD/" rel="prev" title="定制hexo-next:屏蔽“上一篇”和“下一篇”功能">
+                  <i class="fa fa-angle-left"></i> 定制hexo-next:屏蔽“上一篇”和“下一篇”功能
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">BlackNeko</span>
+  </div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/pisces/" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
